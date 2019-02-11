@@ -1,0 +1,47 @@
+{
+  "name": "gendiffbyvp",
+  "version": "1.1.9",
+  "description": "Utility to find differences in system files",
+  "main": "index.js",
+  "bin": {
+    "gendiff": "dist/bin/gendiff.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "NODE_ENV=production babel src --out-dir dist --source-maps inline",
+    "prepublishOnly": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Vadimusss/project-lvl2-s413.git"
+  },
+  "keywords": [
+    "find",
+    "differences",
+    "system",
+    "files"
+  ],
+  "author": "Vadim Piryazev",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Vadimusss/project-lvl2-s413/issues"
+  },
+  "homepage": "https://github.com/Vadimusss/project-lvl2-s413#readme",
+  "devDependencies": {
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.2.2",
+    "@babel/node": "^7.2.2",
+    "@babel/preset-env": "^7.3.1",
+    "babel-eslint": "^10.0.1",
+    "eslint": "^5.13.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-babel": "^5.3.0",
+    "eslint-plugin-import": "^2.16.0"
+  },
+  "dependencies": {
+    "commander": "^2.19.0"
+  }
+}
