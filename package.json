@@ -1,6 +1,6 @@
 {
   "name": "gendiffbyvp",
-  "version": "1.1.9",
+  "version": "1.2.2",
   "description": "Utility to find differences in system files",
   "main": "index.js",
   "bin": {
@@ -10,7 +10,7 @@
     "dist"
   ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "build": "NODE_ENV=production babel src --out-dir dist --source-maps inline",
     "prepublishOnly": "npm run build"
   },
@@ -39,9 +39,12 @@
     "eslint": "^5.13.0",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-babel": "^5.3.0",
-    "eslint-plugin-import": "^2.16.0"
+    "eslint-plugin-import": "^2.16.0",
+    "jest": "^24.1.0"
   },
   "dependencies": {
-    "commander": "^2.19.0"
+    "commander": "^2.19.0",
+    "file-system": "^2.2.2",
+    "lodash": "^4.17.11"
   }
 }
