@@ -1,11 +1,11 @@
-import fs from 'file-system';
-import path from 'path';
 import yaml from 'js-yaml';
+import ini from 'ini';
 
 const mapping = {
-  json: string => JSON.parse(fs.readFileSync(string, 'utf-8')),
-  yml: string => yaml.safeLoad(fs.readFileSync(string, 'utf8')),
+  json: data => JSON.parse(data),
+  yml: data => yaml.safeLoad(data),
+  ini: data => ini.parse(data),
 };
 
 
-export default filePath => mapping[path.extname(filePath).slice(1)](filePath);
+export default (data, format) => mapping[format](data);

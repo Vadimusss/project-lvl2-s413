@@ -1,32 +1,31 @@
-import has from 'lodash/has';
-import parser from './parsers';
+import fs from 'fs';
+import path from 'path';
+import _ from 'lodash';
+import parseData from './parsers';
 
-export default (firstFile, secondFile) => {
-  const firstObject = parser(firstFile);
-  const secondObject = parser(secondFile);
+const getData = filePath => fs.readFileSync(filePath, 'utf-8');
+const getFormat = filePath => path.extname(filePath).slice(1);
 
-  const deleted = Object.keys(firstObject).reduce((acc, key) => {
-    if (has(secondObject, key)) {
-      return acc;
+export default (first, second) => {
+  const firstObject = parseData(getData(first), getFormat(first));
+  const secondObject = parseData(getData(second), getFormat(second));
+  const unionKeys = _.union(Object.keys(firstObject), Object.keys(secondObject));
+
+  const settingList = unionKeys.map((key) => {
+    if (!_.has(secondObject, key)) {
+      return `  -${key}: ${firstObject[key]}`;
     }
 
-    return `${acc}\n  - ${key}: ${firstObject[key]}`;
-  }, '');
-
-  const modified = Object.keys(secondObject).reduce((acc, key) => {
-    const firstValue = firstObject[key];
-    const secondValue = secondObject[key];
-
-    if (has(firstObject, key) && firstValue === secondValue) {
-      return `${acc}\n    ${key}: ${secondObject[key]}`;
+    if (!_.has(firstObject, key)) {
+      return `  +${key}: ${secondObject[key]}`;
     }
 
-    if (has(firstObject, key) && firstValue !== secondValue) {
-      return `${acc}\n  + ${key}: ${secondValue}\n  - ${key}: ${firstValue}`;
+    if (firstObject[key] !== secondObject[key]) {
+      return `  -${key}: ${firstObject[key]}\n  +${key}: ${secondObject[key]}`;
     }
 
-    return `${acc}\n  + ${key}: ${secondValue}`;
-  }, '');
+    return `   ${key}: ${firstObject[key]}`;
+  }).join('\n');
 
-  return `{${modified}${deleted}\n}`;
+  return `{\n${settingList}\n}`;
 };
