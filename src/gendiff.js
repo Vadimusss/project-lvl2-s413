@@ -1,11 +1,9 @@
-#!/usr/bin/env node
-import commander from 'commander';
 import has from 'lodash/has';
-import fs from 'file-system';
+import parser from './parsers';
 
-const gendiff = (firstFile, secondFile) => {
-  const firstObject = JSON.parse(fs.readFileSync(firstFile, 'utf-8'));
-  const secondObject = JSON.parse(fs.readFileSync(secondFile, 'utf-8'));
+export default (firstFile, secondFile) => {
+  const firstObject = parser(firstFile);
+  const secondObject = parser(secondFile);
 
   const deleted = Object.keys(firstObject).reduce((acc, key) => {
     if (has(secondObject, key)) {
@@ -32,15 +30,3 @@ const gendiff = (firstFile, secondFile) => {
 
   return `{${modified}${deleted}\n}`;
 };
-
-commander
-  .version('1.2.1')
-  .arguments('<firstConfig> <secondConfig>')
-  .option('-f, --format [type]', 'Output format')
-  .description('Compares two configuration files and shows a difference.')
-  .action((firstPath, secondPath) => {
-    gendiff(firstPath, secondPath);
-  })
-  .parse(process.argv);
-
-export default gendiff;
