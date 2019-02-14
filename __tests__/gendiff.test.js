@@ -1,5 +1,4 @@
-/* eslint-disable no-undef */
-import fs from 'file-system';
+import fs from 'fs';
 import gendiff from '../src';
 
 test.each([['json'], ['yml'], ['ini']])(
