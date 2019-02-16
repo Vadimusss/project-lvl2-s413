@@ -79,28 +79,3 @@ const genDiff = (first, second) => {
 };
 
 export default genDiff;
-
-
-/* export default (first, second) => {
-  const firstObject = parseData(getData(first), getFormat(first));
-  const secondObject = parseData(getData(second), getFormat(second));
-  const unionKeys = _.union(Object.keys(firstObject), Object.keys(secondObject));
-
-  const settingList = unionKeys.map((key) => {
-    if (!_.has(secondObject, key)) {
-      return `  -${key}: ${firstObject[key]}`;
-    }
-
-    if (!_.has(firstObject, key)) {
-      return `  +${key}: ${secondObject[key]}`;
-    }
-
-    if (firstObject[key] !== secondObject[key]) {
-      return `  -${key}: ${firstObject[key]}\n  +${key}: ${secondObject[key]}`;
-    }
-
-    return `   ${key}: ${firstObject[key]}`;
-  }).join('\n');
-
-  return `{\n${settingList}\n}`;
-}; */
