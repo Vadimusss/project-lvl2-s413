@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import _ from 'lodash';
-import makeRender from './render';
+import makeRender from './renderers';
 import parseData from './parsers';
 
 const getData = filePath => fs.readFileSync(filePath, 'utf-8');
@@ -9,7 +9,7 @@ const getFormat = filePath => path.extname(filePath).slice(1);
 
 const isObject = elm => typeof elm === 'object';
 
-const genDiff = (first, second) => {
+const genDiff = (first, second, format) => {
   const firstObject = parseData(getData(first), getFormat(first));
   const secondObject = parseData(getData(second), getFormat(second));
 
@@ -30,16 +30,14 @@ const genDiff = (first, second) => {
       }
 
       if (fst[key] !== scd[key]) {
-        const newAcc = acc.concat([['settingDeleted', key, fst[key]]]);
-
-        return newAcc.concat([['settingAdded', key, scd[key]]]);
+        return acc.concat([['settingModified', key, [fst[key], scd[key]], scd[key]]]);
       }
 
       return acc.concat([['settingUnmodified', key, fst[key]]]);
     }, []);
   };
 
-  return makeRender(['settingList', '{', iter(firstObject, secondObject)]);
+  return makeRender[format](['settingList', '', iter(firstObject, secondObject)]);
 };
 
 export default genDiff;
