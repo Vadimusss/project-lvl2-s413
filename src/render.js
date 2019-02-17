@@ -1,52 +1,34 @@
-import _ from 'lodash';
+const settingList = (list, deep) => {
+  if (deep > 0) {
+    return `${'    '.repeat(deep)}${list[1]}: {\n${list[2]
+      .reduce((acc, setting) => `${acc}${iter(setting, deep + 1)}\n`, '')}${'    '.repeat(deep)}}`;
+  }
 
-const stringify = (value, nesting) => {
-  return (value instanceof Object) ? Object.keys(value)
-    .reduce((acc, key) => `{${acc}\n${'  '.repeat(nesting + 3)}${key}: ${value[key]}\n${'  '.repeat(nesting + 1)}}`, '') : value;
+  return `{\n${list[2]
+    .reduce((acc, setting) => `${acc}${iter(setting, deep + 1)}\n`, '')}}`;
 };
 
-const iter = (data) => {
-  const newAcc = mapping[data.type](data);
-  return `${newAcc}\n`;
-};
+const settingUnmodified = (setting, deep) => `${'    '
+  .repeat(deep - 1)}    ${setting[1]}: ${stringify(setting[2], deep)}`;
 
-const change = (data) => {
-  const { body, nesting } = data;
-  return `${'  '.repeat(nesting)}${body[0]}: {\n${body[1]
-    .reduce((acc, setting) => `${acc}${iter(setting)}`, '')}${'  '.repeat(nesting)}}`;
-};
+const settingAdded = (setting, deep) => `${'    '
+  .repeat(deep - 1)}  + ${setting[1]}: ${stringify(setting[2], deep)}`;
 
-const add = (data) => {
-  const { body, nesting } = data;
-  return `${'  '.repeat(nesting)}+ ${body[0]}: ${stringify(body[1], nesting)}`;
-};
+const settingDeleted = (setting, deep) => `${'    '
+  .repeat(deep - 1)}  - ${setting[1]}: ${stringify(setting[2], deep)}`;
 
-const del = (data) => {
-  const { body, nesting } = data;
-  return `${'  '.repeat(nesting)}- ${body[0]}: ${stringify(body[1], nesting)}`;
-};
-
-const some = (data) => {
-  const { body, nesting } = data;
-  console.log(nesting);
-  console.log(body);
-  return `${'  '.repeat(nesting)}  ${body[0]}: ${stringify(body[1], nesting)}`;
-};
-
-const root = (data) => {
-  const { body } = data;
-
-  return `{\n${body.reduce((acc, setting) => `${acc}${iter(setting)}`, '')}}`;
-};
+const stringify = (value, deep) => ((value instanceof Object) ? `{\n${Object.entries(value)
+  .reduce((acc, setting) => `${acc}${iter(['settingUnmodified', setting[0], setting[1]], deep + 1)}\n`, '')}${'    '.repeat((deep < 2) ? deep : 2)}}` : value);
 
 const mapping = {
-  root,
-  change,
-  add,
-  del,
-  some,
+  settingList,
+  settingUnmodified,
+  settingAdded,
+  settingDeleted,
 };
 
-const rending = ast => iter(ast);
+const iter = (data, deep) => `${mapping[data[0]](data, deep)}`;
 
-export default rending;
+const makeRender = ast => iter(ast, 0);
+
+export default makeRender;

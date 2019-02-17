@@ -1,7 +1,7 @@
 import fs from 'fs';
 import gendiff from '../src';
 
-test.each([['json']])(
+test.each([['json'], ['yml'], ['ini']])(
   'test gendiff with %s deepFile',
   (ext) => {
     const firstPath = `./__tests__/__fixtures__/beforeDeep.${ext}`;

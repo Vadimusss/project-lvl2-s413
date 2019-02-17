@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import _ from 'lodash';
-import rending from './render';
+import makeRender from './render';
 import parseData from './parsers';
 
 const getData = filePath => fs.readFileSync(filePath, 'utf-8');
@@ -13,69 +13,33 @@ const genDiff = (first, second) => {
   const firstObject = parseData(getData(first), getFormat(first));
   const secondObject = parseData(getData(second), getFormat(second));
 
-  const iter = (fst, scd, nesting) => {
+  const iter = (fst, scd) => {
     const unionKeys = _.union(Object.keys(fst), Object.keys(scd));
+
     return unionKeys.reduce((acc, key) => {
       if (!_.has(scd, key)) {
-        acc.push({
-          type: 'del',
-          nesting: (nesting === 2) ? nesting - 1 : nesting,
-          body: [key, fst[key]],
-        });
-        return acc;
+        return acc.concat([['settingDeleted', key, fst[key]]]);
       }
 
       if (!_.has(fst, key)) {
-        acc.push({
-          type: 'add',
-          nesting: (nesting > 2) ? nesting : nesting - 1,
-          body: [key, scd[key]],
-        });
-        return acc;
+        return acc.concat([['settingAdded', key, scd[key]]]);
       }
 
-
       if (isObject(fst[key]) && isObject(scd[key])) {
-        acc.push({
-          type: 'change',
-          nesting: (nesting > 2) ? nesting + 1 : nesting,
-          body: [key, iter(fst[key], scd[key], nesting + 1)],
-        });
-
-        return acc;
+        return acc.concat([['settingList', key, iter(fst[key], scd[key])]]);
       }
 
       if (fst[key] !== scd[key]) {
-        acc.push({
-          type: 'del',
-          nesting,
-          body: [key, fst[key]],
-        });
-        acc.push({
-          type: 'add',
-          nesting,
-          body: [key, scd[key]],
-        });
-        return acc;
+        const newAcc = acc.concat([['settingDeleted', key, fst[key]]]);
+
+        return newAcc.concat([['settingAdded', key, scd[key]]]);
       }
 
-      console.log(nesting);
-      console.log(key);
-      acc.push({
-        type: 'some',
-        nesting: (nesting > 3) ? nesting + 1 : nesting,
-        body: [key, scd[key]],
-      });
-      return acc;
+      return acc.concat([['settingUnmodified', key, fst[key]]]);
     }, []);
   };
 
-  const root = {
-    type: 'root',
-    body: iter(firstObject, secondObject, 2),
-  };
-
-  return rending(root);
+  return makeRender(['settingList', '{', iter(firstObject, secondObject)]);
 };
 
 export default genDiff;

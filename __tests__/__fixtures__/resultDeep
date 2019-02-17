@@ -8,7 +8,7 @@
         }
         setting6: {
             key: value
-        + ops: vops
+          + ops: vops
         }
       + follow: false
       + setting4: blah blah
