@@ -1,5 +1,6 @@
 import fs from 'fs';
 import gendiff from '../src';
+import makeRender from '../src/renderers';
 
 test.each([['json'], ['yml'], ['ini']])(
   'test gendiff with %s deepFile',
@@ -7,8 +8,9 @@ test.each([['json'], ['yml'], ['ini']])(
     const firstPath = `./__tests__/__fixtures__/beforeDeep.${ext}`;
     const secondPath = `./__tests__/__fixtures__/afterDeep.${ext}`;
     const checkString = fs.readFileSync('./__tests__/__fixtures__/resultDeep', 'utf-8');
+    const defaultString = makeRender.default(gendiff(firstPath, secondPath));
 
-    expect(gendiff(firstPath, secondPath, 'default')).toBe(checkString);
+    expect(defaultString).toBe(checkString);
   },
 );
 
@@ -18,7 +20,8 @@ test.each([['json'], ['yml'], ['ini']])(
     const firstPath = `./__tests__/__fixtures__/beforeDeep.${ext}`;
     const secondPath = `./__tests__/__fixtures__/afterDeep.${ext}`;
     const checkString = fs.readFileSync('./__tests__/__fixtures__/resultDeepPlane', 'utf-8');
+    const planeString = makeRender.plane(gendiff(firstPath, secondPath));
 
-    expect(gendiff(firstPath, secondPath, 'plane')).toBe(checkString);
+    expect(planeString).toBe(checkString);
   },
 );

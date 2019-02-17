@@ -1,15 +1,15 @@
-const settingList = list => list[2]
-  .reduce((acc, setting) => `${acc}${iter(setting, list[1])}`, '');
+const settingList = list => list.children
+  .reduce((acc, setting) => `${acc}${iter(setting, list.name)}`, '');
 
 const stringify = value => `${((value instanceof Object) ? '[complex value]' : value)}`;
 
-const settingUnmodified = (setting, path) => `Property '${path}.${setting[1]}' not changed it is equal: ${stringify(setting[2])}\n`;
+const settingUnmodified = (setting, path) => `Property '${path}.${setting.name}' not changed it is equal: ${stringify(setting.value)}\n`;
 
-const settingAdded = (setting, path) => `Property '${path}.${setting[1]}' was added with value: ${stringify(setting[2])}\n`;
+const settingAdded = (setting, path) => `Property '${path}.${setting.name}' was added with value: ${stringify(setting.value)}\n`;
 
-const settingDeleted = (setting, path) => `Property '${path}.${setting[1]}' was removed\n`;
+const settingDeleted = (setting, path) => `Property '${path}.${setting.name}' was removed\n`;
 
-const settingModified = (setting, path) => `Property '${path}.${setting[1]}' was updated. From ${stringify(setting[2][0])} to ${stringify(setting[2][1])}\n`;
+const settingModified = (setting, path) => `Property '${path}.${setting.name}' was updated. From ${stringify(setting.oldValue)} to ${stringify(setting.newValue)}\n`;
 
 const mapping = {
   settingList,
@@ -19,7 +19,7 @@ const mapping = {
   settingDeleted,
 };
 
-const iter = (data, path) => `${mapping[data[0]](data, path)}`;
+const iter = (data, path) => `${mapping[data.type](data, path)}`;
 
 const makePlaneRender = ast => iter(ast, '').slice(0, -1);
 
