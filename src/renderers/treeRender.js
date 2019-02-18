@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-const settingList = (list, deep) => {
+const dataList = (list, deep) => {
   const { name, children } = list;
 
   if (deep > 0) {
@@ -20,24 +20,24 @@ const stringify = (value, deep) => {
   return `{\n${'    '.repeat(deep + 1)}${formatedValue}\n${'    '.repeat((deep < 2) ? deep : 2)}}`;
 };
 
-const settingUnmodified = (data, deep) => [`${'    '
+const unmodified = (data, deep) => [`${'    '
   .repeat(deep - 1)}    ${data.name}: ${stringify(data.value, deep)}`];
 
-const settingAdded = (data, deep) => [`${'    '
+const added = (data, deep) => [`${'    '
   .repeat(deep - 1)}  + ${data.name}: ${stringify(data.value, deep)}`];
 
-const settingDeleted = (data, deep) => [`${'    '
+const deleted = (data, deep) => [`${'    '
   .repeat(deep - 1)}  - ${data.name}: ${stringify(data.value, deep)}`];
 
-const settingModified = (data, deep) => [[`${'    '.repeat(deep - 1)}  - ${data.name}: ${stringify(data.oldValue, deep)}`],
+const modified = (data, deep) => [[`${'    '.repeat(deep - 1)}  - ${data.name}: ${stringify(data.oldValue, deep)}`],
   [`${'    '.repeat(deep - 1)}  + ${data.name}: ${stringify(data.newValue, deep)}`]];
 
 const mapping = {
-  settingList,
-  settingUnmodified,
-  settingModified,
-  settingAdded,
-  settingDeleted,
+  dataList,
+  unmodified,
+  modified,
+  added,
+  deleted,
 };
 
 const treeRender = (ast, deep = 0) => {

@@ -15,28 +15,28 @@ const genDiff = (firstPath, secondPath) => {
 
     return unionKeys.reduce((acc, key) => {
       if (!_.has(secondData, key)) {
-        return acc.concat({ type: 'settingDeleted', name: key, value: firstData[key] });
+        return acc.concat({ type: 'deleted', name: key, value: firstData[key] });
       }
 
       if (!_.has(firstData, key)) {
-        return acc.concat({ type: 'settingAdded', name: key, value: secondData[key] });
+        return acc.concat({ type: 'added', name: key, value: secondData[key] });
       }
 
       if (_.isObject(firstData[key]) && _.isObject(secondData[key])) {
-        return acc.concat({ type: 'settingList', name: key, children: iter(firstData[key], secondData[key]) });
+        return acc.concat({ type: 'dataList', name: key, children: iter(firstData[key], secondData[key]) });
       }
 
       if (firstData[key] !== secondData[key]) {
         return acc.concat({
-          type: 'settingModified', name: key, oldValue: firstData[key], newValue: secondData[key],
+          type: 'modified', name: key, oldValue: firstData[key], newValue: secondData[key],
         });
       }
 
-      return acc.concat({ type: 'settingUnmodified', name: key, value: secondData[key] });
+      return acc.concat({ type: 'unmodified', name: key, value: secondData[key] });
     }, []);
   };
 
-  return { type: 'settingList', name: '', children: iter(firstObject, secondObject) };
+  return { type: 'dataList', name: '', children: iter(firstObject, secondObject) };
 };
 
 export default genDiff;

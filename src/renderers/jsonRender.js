@@ -1,61 +1,61 @@
-const settingList = list => list.children
+const dataList = list => list.children
   .reduce((acc, data) => acc.concat(iter(data)), []);
 
 const stringify = value => `${((value instanceof Object) ? '[complex value]' : value)}`;
 
-const settingUnmodified = data => data;
+const unmodified = data => data;
 
-const settingAdded = data => data;
+const added = data => data;
 
-const settingDeleted = data => data;
+const deleted = data => data;
 
-const settingModified = data => data;
+const modified = data => data;
 
 const mapping = {
-  settingList,
-  settingUnmodified,
-  settingModified,
-  settingAdded,
-  settingDeleted,
+  dataList,
+  unmodified,
+  modified,
+  added,
+  deleted,
 };
 
 const iter = data => mapping[data.type](data);
 
 const makeJSONRender = (ast) => {
   const nodeList = iter(ast);
-  const added = nodeList
-    .filter(value => value.type === 'settingAdded')
+  const addedList = nodeList
+    .filter(value => value.type === 'added')
     .reduce((acc, data) => {
       const newAcc = Object.assign(acc, { [data.name]: stringify(data.value) });
       return newAcc;
     }, {});
 
-  const deleted = nodeList
-    .filter(value => value.type === 'settingDeleted')
+  const deletedList = nodeList
+    .filter(value => value.type === 'deleted')
     .reduce((acc, data) => {
       const newAcc = Object.assign(acc, { [data.name]: stringify(data.value) });
       return newAcc;
     }, {});
 
-  const modified = nodeList
-    .filter(value => value.type === 'settingModified')
+  const modifiedList = nodeList
+    .filter(value => value.type === 'modified')
     .reduce((acc, data) => {
       const newAcc = Object.assign(acc, { [data.name]: stringify(data.newValue) });
       return newAcc;
     }, {});
 
-  const unmodified = nodeList
-    .filter(value => value.type === 'settingUnmodified')
+  const unmodifiedList = nodeList
+    .filter(value => value.type === 'unmodified')
     .reduce((acc, data) => {
       const newAcc = Object.assign(acc, { [data.name]: stringify(data.value) });
       return newAcc;
     }, {});
 
   const resultJSON = {
-    added,
-    deleted,
-    modified,
-    unmodified,
+    added: addedList,
+    deleted: deletedList,
+    modified: modifiedList,
+    unmodified: unmodifiedList,
   };
 
   return JSON.stringify(resultJSON);
