@@ -1,0 +1,1 @@
+{"added":{"ops":"vops","follow":"false","setting4":"blah blah","setting5":"[complex value]","group3":"[complex value]"},"deleted":{"setting2":"200","group2":"[complex value]"},"modified":{"setting3":"[complex value]","baz":"bars","nest":"str"},"unmodified":{"setting1":"Value 1","key":"value","foo":"bar"}}
