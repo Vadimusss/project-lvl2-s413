@@ -5,11 +5,11 @@ const settingList = (list, deep) => {
 
   if (deep > 0) {
     return [[`${'    '.repeat(deep)}${name}: {`],
-      [children.reduce((acc, data) => acc.concat(iter(data, deep + 1)), [])],
+      [children.reduce((acc, data) => acc.concat(treeRender(data, deep + 1)), [])],
       [`${'    '.repeat(deep)}}`]];
   }
 
-  return [['{'], [children.reduce((acc, data) => acc.concat(iter(data, deep + 1)), [])], ['}']];
+  return [['{'], [children.reduce((acc, data) => acc.concat(treeRender(data, deep + 1)), [])], ['}']];
 };
 
 const stringify = (value, deep) => {
@@ -40,11 +40,10 @@ const mapping = {
   settingDeleted,
 };
 
-const iter = (data, deep) => {
-  const result = mapping[data.type](data, deep);
+const treeRender = (ast, deep = 0) => {
+  const result = mapping[ast.type](ast, deep);
+
   return _.flattenDeep(result).join('\n');
 };
-
-const treeRender = ast => iter(ast, 0);
 
 export default treeRender;
