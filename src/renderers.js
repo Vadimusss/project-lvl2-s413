@@ -1,6 +1,6 @@
-import makeTreeRender from './treeRender';
-import makePlainRender from './planeRender';
-import makeJSONRender from './jsonRender';
+import makeTreeRender from './renderers/treeRender';
+import makePlainRender from './renderers/planeRender';
+import makeJSONRender from './renderers/jsonRender';
 
 const makeRender = {
   default: makeTreeRender,

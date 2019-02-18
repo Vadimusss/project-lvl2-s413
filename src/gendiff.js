@@ -6,33 +6,33 @@ import parseData from './parsers';
 const getData = filePath => fs.readFileSync(filePath, 'utf-8');
 const getFormat = filePath => path.extname(filePath).slice(1);
 
-const genDiff = (first, second) => {
-  const firstObject = parseData(getData(first), getFormat(first));
-  const secondObject = parseData(getData(second), getFormat(second));
+const genDiff = (firstPath, secondPath) => {
+  const firstObject = parseData(getData(firstPath), getFormat(firstPath));
+  const secondObject = parseData(getData(secondPath), getFormat(secondPath));
 
-  const iter = (fst, scd) => {
-    const unionKeys = _.union(Object.keys(fst), Object.keys(scd));
+  const iter = (firstData, secondData) => {
+    const unionKeys = _.union(Object.keys(firstData), Object.keys(secondData));
 
     return unionKeys.reduce((acc, key) => {
-      if (!_.has(scd, key)) {
-        return acc.concat({ type: 'settingDeleted', name: key, value: fst[key] });
+      if (!_.has(secondData, key)) {
+        return acc.concat({ type: 'settingDeleted', name: key, value: firstData[key] });
       }
 
-      if (!_.has(fst, key)) {
-        return acc.concat({ type: 'settingAdded', name: key, value: scd[key] });
+      if (!_.has(firstData, key)) {
+        return acc.concat({ type: 'settingAdded', name: key, value: secondData[key] });
       }
 
-      if (_.isObject(fst[key]) && _.isObject(scd[key])) {
-        return acc.concat({ type: 'settingList', name: key, children: iter(fst[key], scd[key]) });
+      if (_.isObject(firstData[key]) && _.isObject(secondData[key])) {
+        return acc.concat({ type: 'settingList', name: key, children: iter(firstData[key], secondData[key]) });
       }
 
-      if (fst[key] !== scd[key]) {
+      if (firstData[key] !== secondData[key]) {
         return acc.concat({
-          type: 'settingModified', name: key, oldValue: fst[key], newValue: scd[key],
+          type: 'settingModified', name: key, oldValue: firstData[key], newValue: secondData[key],
         });
       }
 
-      return acc.concat({ type: 'settingUnmodified', name: key, value: scd[key] });
+      return acc.concat({ type: 'settingUnmodified', name: key, value: secondData[key] });
     }, []);
   };
 
