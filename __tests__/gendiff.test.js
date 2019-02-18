@@ -3,7 +3,7 @@ import gendiff from '../src';
 import makeRender from '../src/renderers';
 
 test.each([['json'], ['yml'], ['ini']])(
-  'test gendiff with %s deepFile',
+  'test gendiff + default render with %s deepFile',
   (ext) => {
     const firstPath = `./__tests__/__fixtures__/beforeDeep.${ext}`;
     const secondPath = `./__tests__/__fixtures__/afterDeep.${ext}`;
@@ -15,19 +15,19 @@ test.each([['json'], ['yml'], ['ini']])(
 );
 
 test.each([['json'], ['yml'], ['ini']])(
-  'test gendiff with %s deepFile',
+  'test gendiff + plain render with %s deepFile',
   (ext) => {
     const firstPath = `./__tests__/__fixtures__/beforeDeep.${ext}`;
     const secondPath = `./__tests__/__fixtures__/afterDeep.${ext}`;
-    const checkString = fs.readFileSync('./__tests__/__fixtures__/resultDeepPlane', 'utf-8');
-    const planeString = makeRender.plane(gendiff(firstPath, secondPath));
+    const checkString = fs.readFileSync('./__tests__/__fixtures__/resultDeepPlain', 'utf-8');
+    const plainString = makeRender.plain(gendiff(firstPath, secondPath));
 
-    expect(planeString).toBe(checkString);
+    expect(plainString).toBe(checkString);
   },
 );
 
 test.each([['json'], ['yml'], ['ini']])(
-  'test gendiff with %s deepFile',
+  'test gendiff + json render with %s deepFile',
   (ext) => {
     const firstPath = `./__tests__/__fixtures__/beforeDeep.${ext}`;
     const secondPath = `./__tests__/__fixtures__/afterDeep.${ext}`;

@@ -1,36 +1,37 @@
 import _ from 'lodash';
 
-const dataList = (list, deep) => {
+const dataList = (list, depth) => {
   const { name, children } = list;
 
-  if (deep > 0) {
-    return [[`${'    '.repeat(deep)}${name}: {`],
-      [children.reduce((acc, data) => acc.concat(treeRender(data, deep + 1)), [])],
-      [`${'    '.repeat(deep)}}`]];
+  if (depth > 0) {
+    return [`${'    '.repeat(depth)}${name}: {`,
+      children.reduce((acc, data) => [...acc, dispatcher(data, depth + 1)], []),
+      `${'    '.repeat(depth)}}`];
   }
 
-  return [['{'], [children.reduce((acc, data) => acc.concat(treeRender(data, deep + 1)), [])], ['}']];
+  return ['{', children.reduce((acc, data) => [...acc, dispatcher(data, depth + 1)], []), '}'];
 };
 
-const stringify = (value, deep) => {
+const stringify = (value, depth) => {
   if (!_.isObject(value)) {
     return value;
   }
-  const formatedValue = Object.entries(value).reduce((acc, data) => acc.concat([`${data[0]}: ${data[1]}`]), []);
-  return `{\n${'    '.repeat(deep + 1)}${formatedValue}\n${'    '.repeat((deep < 2) ? deep : 2)}}`;
+  const formatedValue = Object.entries(value).reduce((acc, data) => [...acc, `${data[0]}: ${data[1]}`], []);
+  return `{\n${'    '.repeat(depth + 1)}${formatedValue.join('\n')}\n${'    '.repeat((depth < 2) ? depth : 2)}}`;
 };
 
-const unmodified = (data, deep) => [`${'    '
-  .repeat(deep - 1)}    ${data.name}: ${stringify(data.value, deep)}`];
+const unmodified = (data, depth) => `${'    '
+  .repeat(depth - 1)}    ${data.name}: ${stringify(data.value, depth)}`;
 
-const added = (data, deep) => [`${'    '
-  .repeat(deep - 1)}  + ${data.name}: ${stringify(data.value, deep)}`];
+const added = (data, depth) => `${'    '
+  .repeat(depth - 1)}  + ${data.name}: ${stringify(data.value, depth)}`;
 
-const deleted = (data, deep) => [`${'    '
-  .repeat(deep - 1)}  - ${data.name}: ${stringify(data.value, deep)}`];
+const deleted = (data, depth) => `${'    '
+  .repeat(depth - 1)}  - ${data.name}: ${stringify(data.value, depth)}`;
 
-const modified = (data, deep) => [[`${'    '.repeat(deep - 1)}  - ${data.name}: ${stringify(data.oldValue, deep)}`],
-  [`${'    '.repeat(deep - 1)}  + ${data.name}: ${stringify(data.newValue, deep)}`]];
+const modified = (data, depth) => `${'    '
+  .repeat(depth - 1)}  - ${data.name}: ${stringify(data.oldValue, depth)}\n${'    '
+  .repeat(depth - 1)}  + ${data.name}: ${stringify(data.newValue, depth)}`;
 
 const mapping = {
   dataList,
@@ -39,11 +40,9 @@ const mapping = {
   added,
   deleted,
 };
+/* Без дополнительной функции не получается собрать */
+const dispatcher = (ast, depth) => mapping[ast.type](ast, depth);
 
-const treeRender = (ast, deep = 0) => {
-  const result = mapping[ast.type](ast, deep);
-
-  return _.flattenDeep(result).join('\n');
-};
+const treeRender = ast => _.flattenDeep(dispatcher(ast, 0)).join('\n');
 
 export default treeRender;
