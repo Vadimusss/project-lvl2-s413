@@ -42,7 +42,6 @@ const mapping = {
 
 const iter = (data, deep) => {
   const result = mapping[data.type](data, deep);
-  //console.log(_.flattenDeep(result).join('\n'));
   return _.flattenDeep(result).join('\n');
 };
 
